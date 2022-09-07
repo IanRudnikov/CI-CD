@@ -1,0 +1,14 @@
+deploy:
+    tags:
+      - docker
+    only:
+     changes:
+      - index.html
+    script:
+         - 'cp $CI_PROJECT_DIR/index.html /opt/dock/nginx/'
+         - 'docker run -d -p 9889:80 -v /opt/dock/nginx:/usr/share/nginx/html --name nginx nginx'
+         - sleep 1s
+         - "curl -k 0.0.0.0:9889  > /opt/dock/nginx/index2.html"
+         - 'md5sum /opt/dock/nginx/index.html /opt/dock/nginx/index2.html'
+         - 'docker stop nginx'
+         - 'docker rm nginx'
